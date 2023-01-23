@@ -18,5 +18,11 @@
         "php": "^8.0.2",
         "laravel/framework": "^9.19",
         "guzzlehttp/guzzle": "^7.5"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@php artisan optimize:clear",
+            "mkdir app/XXX"
+        ]
     }
 }
