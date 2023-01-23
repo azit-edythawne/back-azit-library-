@@ -22,13 +22,13 @@
     "scripts": {
         "post-install-cmd": [
             "@php artisan optimize:clear",
-            "mkdir app/XXX"
+            "mkdir XXX"
         ],
         "pre-update-cmd": [
-            "mkdir app/pre"
+            "mkdir pre"
         ],
         "post-update-cmd": [
-            "mkdir app/post"
+            "mkdir post"
         ]
     }
 }
