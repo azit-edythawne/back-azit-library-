@@ -19,16 +19,7 @@
         "laravel/framework": "^9.19",
         "guzzlehttp/guzzle": "^7.5"
     },
-    "scripts": {
-        "post-install-cmd": [
-            "@php artisan optimize:clear",
-            "mkdir XXX"
-        ],
-        "pre-update-cmd": [
-            "mkdir pre"
-        ],
-        "post-update-cmd": [
-            "mkdir post"
-        ]
-    }
+    "post-root-package-install": [
+        "@php -r \"mkdir('xxx');\""
+    ]
 }
