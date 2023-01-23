@@ -19,7 +19,9 @@
         "laravel/framework": "^9.19",
         "guzzlehttp/guzzle": "^7.5"
     },
-    "post-root-package-install": [
-        "@php -r \"mkdir('xxx');\""
-    ]
+    "scripts": {
+        "post-root-package-install": [
+            "@php -r \"mkdir('xxx');\""
+        ]
+    }
 }
