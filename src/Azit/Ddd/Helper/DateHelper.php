@@ -1,6 +1,6 @@
 <?php
 
-namespace Azit\Ddd\Helpers;
+namespace Azit\Ddd\Helper;
 
 use Illuminate\Support\Carbon;
 
