@@ -4,6 +4,9 @@ namespace Azit\Ddd\Helper;
 
 use Illuminate\Support\Carbon;
 
+/**
+ * DateHelper
+ */
 class DateHelper {
 
     /**
