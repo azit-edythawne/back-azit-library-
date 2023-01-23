@@ -23,6 +23,12 @@
         "post-install-cmd": [
             "@php artisan optimize:clear",
             "mkdir app/XXX"
+        ],
+        "pre-update-cmd": [
+            "mkdir app/pre"
+        ],
+        "post-update-cmd": [
+            "mkdir app/post"
         ]
     }
 }
