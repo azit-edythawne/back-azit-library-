@@ -1,0 +1,22 @@
+{
+    "name": "azit/ddd",
+    "description": "Libreria",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Azit\\Ddd\\": "src/Azit/Ddd"
+        }
+    },
+    "authors": [
+        {
+            "name": "edythawne"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.0.2",
+        "laravel/framework": "^9.19",
+        "guzzlehttp/guzzle": "^7.5"
+    }
+}
