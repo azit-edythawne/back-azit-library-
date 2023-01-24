@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Azit\\Ddd\\": "src/Azit/Ddd"
+            "Azit\\Ddd\\": "src"
         }
     },
     "authors": [
@@ -18,10 +18,5 @@
         "php": "^8.0.2",
         "laravel/framework": "^9.19",
         "guzzlehttp/guzzle": "^7.5"
-    },
-    "scripts": {
-        "post-root-package-install": [
-            "@php -r \"mkdir('xxx');\""
-        ]
     }
 }
