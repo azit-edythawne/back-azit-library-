@@ -4,7 +4,6 @@ namespace Azit\Ddd\Arch\Domains\Request;
 
 use Azit\Ddd\Arch\Constant\FileConstant;
 use Azit\Ddd\Arch\Constant\MessageConstant;
-use Azit\Ddd\Arch\Constant\PageConstant;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,8 +12,8 @@ use Illuminate\Validation\Validator as Validate;
 use Symfony\Component\HttpFoundation\Response;
 
 class BaseRequest {
-
     protected Request $request;
+    private const FILE_ALLOWS = ['pdf', 'xls', 'xlsx', 'doc', 'docx', 'png', 'jpg', 'jpeg'];
 
     /**
      * @return Request
@@ -83,7 +82,7 @@ class BaseRequest {
      * Permite configurar los archiuos permitidos
      * @return File
      */
-    protected function filesAllows(){
-        return File::types(['pdf', 'xls', 'xlsx', 'doc', 'docx', 'png', 'jpg', 'jpeg']) -> max(FileConstant::FILE_MAX_SIZE);
+    protected function filesAllows(array $fileAllows = BaseRequest::FILE_ALLOWS, int $fileSize = FileConstant::FILE_MAX_SIZE){
+        return File::types($fileAllows) -> max($fileSize);
     }
 }

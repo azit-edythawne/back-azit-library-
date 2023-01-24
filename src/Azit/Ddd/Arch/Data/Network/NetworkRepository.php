@@ -43,7 +43,7 @@ abstract class NetworkRepository {
     }
 
     /**
-     * Permite obtener informacion mediante post de HttpClient
+     * Permite obtener información mediante post de HttpClient
      * @param string $url
      * @param array $data
      * @param array $headers

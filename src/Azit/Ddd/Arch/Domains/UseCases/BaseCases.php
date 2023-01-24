@@ -2,7 +2,6 @@
 
 namespace Azit\Ddd\Arch\Domains\UseCases;
 
-use Azit\Ddd\Arch\Constant\PageConstant;
 use Azit\Ddd\Arch\Constant\ValueConstant;
 use Azit\Ddd\Arch\Domains\Response\BaseResponse;
 use Illuminate\Http\Request;
