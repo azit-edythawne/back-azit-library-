@@ -19,6 +19,12 @@ class ExcelJob implements ShouldQueue {
     protected string $filename;
     protected object $exporter;
 
+    /**
+     * Parametros que requiere el excel job
+     * @param object $exporter
+     * @param string $basename
+     * @param string $extension
+     */
     public function __construct(object $exporter, string $basename, string $extension) {
         $this -> exporter = $exporter;
         $this -> basename = $basename;
