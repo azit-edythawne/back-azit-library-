@@ -2,7 +2,7 @@
 
 namespace Azit\Ddd\Arch\Domains\Request;
 
-use Azit\Ddd\Arch\Constant\LibraryConstant;
+use Azit\Ddd\Arch\Constant\PageConstant;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -71,7 +71,7 @@ class BaseRequest {
     protected function isValid(Validate $validator): void {
         if ($validator->fails()) {
             throw new HttpResponseException(response()->json([
-                'message' => LibraryConstant::EXCEPTION_DATA_REQUIRED,
+                'message' => PageConstant::EXCEPTION_DATA_REQUIRED,
                 'data' => $validator->failed()
             ], Response::HTTP_BAD_REQUEST));
         }
@@ -82,6 +82,6 @@ class BaseRequest {
      * @return File
      */
     protected function filesAllows(){
-        return File::types(['pdf', 'xls', 'xlsx', 'doc', 'docx', 'png', 'jpg', 'jpeg']) -> max(LibraryConstant::FILE_MAX_SIZE);
+        return File::types(['pdf', 'xls', 'xlsx', 'doc', 'docx', 'png', 'jpg', 'jpeg']) -> max(PageConstant::FILE_MAX_SIZE);
     }
 }

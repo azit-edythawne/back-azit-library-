@@ -2,7 +2,7 @@
 
 namespace Azit\Ddd\Arch\Domains\UseCases;
 
-use Azit\Ddd\Arch\Constant\LibraryConstant;
+use Azit\Ddd\Arch\Constant\PageConstant;
 use Azit\Ddd\Arch\Domains\Response\BaseResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -69,7 +69,7 @@ abstract class BaseCases {
      * @return int
      */
     protected function getNumericValue(string $key) : int {
-        return Arr::get($this->attributes, $key, LibraryConstant::DEFAULT_NUMERIC);
+        return Arr::get($this->attributes, $key, PageConstant::DEFAULT_NUMERIC);
     }
 
     /**
@@ -78,7 +78,7 @@ abstract class BaseCases {
      * @return string
      */
     protected function getStringValue(string $key) : string {
-        return Arr::get($this->attributes, $key, LibraryConstant::DEFAULT_STRING);
+        return Arr::get($this->attributes, $key, PageConstant::DEFAULT_STRING);
     }
 
     /**

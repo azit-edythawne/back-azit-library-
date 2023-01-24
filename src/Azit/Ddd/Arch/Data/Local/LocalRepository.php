@@ -2,7 +2,7 @@
 
 namespace Azit\Ddd\Arch\Data\Local;
 
-use Azit\Ddd\Arch\Constant\LibraryConstant;
+use Azit\Ddd\Arch\Constant\PageConstant;
 use Azit\Ddd\Arch\Data\Local\Callback\GetPaginatedIterator;
 
 abstract class LocalRepository {
@@ -17,8 +17,8 @@ abstract class LocalRepository {
         $pages = collect($this->paginated->setPaginated($filters) -> toArray());
 
         return [
-            LibraryConstant::PAGINATION_KEY_DATA => $pages -> pull(LibraryConstant::PAGINATION_KEY_DATA, []),
-            LibraryConstant::PAGINATION_KEY_PAGES  => $pages
+            PageConstant::PAGINATION_KEY_DATA => $pages -> pull(PageConstant::PAGINATION_KEY_DATA, []),
+            PageConstant::PAGINATION_KEY_PAGES  => $pages
         ];
     }
 
