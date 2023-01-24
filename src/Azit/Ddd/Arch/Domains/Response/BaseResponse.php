@@ -5,7 +5,7 @@ namespace Azit\Ddd\Arch\Domains\Response;
 class BaseResponse {
 
     protected mixed $data;
-    protected string $message;
+    protected ?string $message;
 
     /**
      * @return mixed
@@ -22,16 +22,16 @@ class BaseResponse {
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMessage(): string {
+    public function getMessage(): ?string {
         return $this->message;
     }
 
     /**
-     * @param string $message
+     * @param string|null $message
      */
-    public function setMessage(string $message): void {
+    public function setMessage(?string $message): void {
         $this->message = $message;
     }
 

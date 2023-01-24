@@ -3,6 +3,7 @@
 namespace Azit\Ddd\Arch\Domains\UseCases;
 
 use Azit\Ddd\Arch\Constant\PageConstant;
+use Azit\Ddd\Arch\Constant\ValueConstant;
 use Azit\Ddd\Arch\Domains\Response\BaseResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -13,13 +14,23 @@ use Illuminate\Support\Str;
 abstract class BaseCases {
 
     private ?string $url;
+    protected ?array $user;
     protected ?array $attributes;
     private BaseResponse $resource;
+    private ?UserRequireCallback $userCallback;
 
     abstract protected function getUser() : ?array;
 
-    public function __construct(BaseResponse $object = null) {
+    /**
+     * Constructor
+     * Permite un objecto response opcional
+     * Permite un user callback para obtener el usuario logeado
+     * @param BaseResponse|null $object
+     * @param UserRequireCallback|null $callback
+     */
+    public function __construct(?BaseResponse $object, ?UserRequireCallback $callback) {
         $this -> initResponse($object);
+        $this -> userCallback = $callback;
     }
 
     /**
@@ -27,7 +38,7 @@ abstract class BaseCases {
      * @param BaseResponse|null $object
      * @return void
      */
-    private function initResponse(BaseResponse $object = null) {
+    private function initResponse(?BaseResponse $object) {
         if (isset($object)) {
             $this -> resource = $object;
         }
@@ -40,7 +51,11 @@ abstract class BaseCases {
     public function setRequest(Request $args){
         $this -> setAttributes($args -> all());
         $this -> url = $args -> url();
-        $this -> user = $args -> user() ?-> toArray();
+
+        // Se requiere informacion del usuario autenticado
+        if (isset($this -> userCallback)) {
+            $this -> user = $this -> userCallback -> extractUserByRequest($args);
+        }
     }
 
     /**
@@ -69,7 +84,7 @@ abstract class BaseCases {
      * @return int
      */
     protected function getNumericValue(string $key) : int {
-        return Arr::get($this->attributes, $key, PageConstant::DEFAULT_NUMERIC);
+        return Arr::get($this->attributes, $key, ValueConstant::DEFAULT_NUMERIC);
     }
 
     /**
@@ -78,7 +93,7 @@ abstract class BaseCases {
      * @return string
      */
     protected function getStringValue(string $key) : string {
-        return Arr::get($this->attributes, $key, PageConstant::DEFAULT_STRING);
+        return Arr::get($this->attributes, $key, ValueConstant::DEFAULT_STRING);
     }
 
     /**

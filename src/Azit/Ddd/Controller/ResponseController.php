@@ -6,7 +6,9 @@ use Azit\Ddd\Arch\Domains\Response\BaseResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class ResponseController extends Controller {
@@ -15,18 +17,18 @@ abstract class ResponseController extends Controller {
     /**
      * Respuesta de documentos
      * @param BaseResponse $response
-     * @return mixed
+     * @return BinaryFileResponse
      */
-    protected abstract function getResponseDocument(BaseResponse $response);
+    protected abstract function getResponseDocument(BaseResponse $response) : BinaryFileResponse;
 
     /**
-     * Respuiesta de datos
+     *  Respuesta de datos
      * @param string $message
      * @param mixed $data
      * @param int $emptyCode
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    protected function getResponseData(string $message, mixed $data, int $emptyCode = Response::HTTP_ACCEPTED){
+    protected function getResponseData(string $message, mixed $data, int $emptyCode = Response::HTTP_ACCEPTED) : JsonResponse {
         $response = ['data' => $data, 'message' => $message];
 
         if (!isset($data)) {
