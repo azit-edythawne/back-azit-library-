@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Azit\\Ddd\\": "src"
+            "Azit\\Ddd\\": "src/Azit/Ddd"
         }
     },
     "authors": [

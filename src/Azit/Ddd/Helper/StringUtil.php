@@ -1,6 +1,6 @@
 <?php
 
-namespace Azit\Ddd\Azit\Ddd\Helper;
+namespace Azit\Ddd\Helper;
 
 use Illuminate\Support\Str;
 
