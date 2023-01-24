@@ -17,9 +17,9 @@ abstract class ResponseController extends Controller {
     /**
      * Respuesta de documentos
      * @param BaseResponse $response
-     * @return BinaryFileResponse
+     * @return JsonResponse|BinaryFileResponse
      */
-    protected abstract function getResponseDocument(BaseResponse $response) : BinaryFileResponse;
+    protected abstract function getResponseDocument(BaseResponse $response) : JsonResponse|BinaryFileResponse;
 
     /**
      *  Respuesta de datos
