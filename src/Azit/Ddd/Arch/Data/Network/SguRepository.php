@@ -8,8 +8,17 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 abstract class SguRepository extends NetworkRepository {
+    abstract public function getAppKey() : string;
 
-    abstract protected function getAppKey() : string;
+    /**
+     * Esta clase esta obsoleta en SGURepository
+     * @deprecated
+     * @param string $segment
+     * @return string
+     */
+    public function getUrl(string $segment): string {
+        // TODO: Implement getUrl() method.
+    }
 
     /**
      * Permite realizar una peticion a SGU
