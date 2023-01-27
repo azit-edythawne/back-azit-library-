@@ -69,7 +69,7 @@ abstract class SguRepository extends NetworkRepository {
      * @throws GuzzleException
      */
     public function searchPerson(string $keyApp, string $filter, string $value) : ?array {
-        $url = Str::replace('%s', [$keyApp, $filter, $value], SGUConstant::URL_SGU_BY_PERSON);
+        $url = Str::replaceArray('%s', [$keyApp, $filter, $value], SGUConstant::URL_SGU_BY_PERSON);
         return $this -> sguRequest(NetworkRepository::GET, $url, []);
     }
 
@@ -81,7 +81,7 @@ abstract class SguRepository extends NetworkRepository {
      * @throws GuzzleException
      */
     public function searchCtt(string $keyApp, string $cct) : ?array {
-        $url = Str::replace('%s', [$keyApp, $cct], SGUConstant::URL_SGU_BY_CTT);
+        $url = Str::replaceArray('%s', [$keyApp, $cct], SGUConstant::URL_SGU_BY_CTT);
         $data = $this -> sguRequest(NetworkRepository::GET, $url, []);
 
         if (Arr::has($data, 'schema')) {
