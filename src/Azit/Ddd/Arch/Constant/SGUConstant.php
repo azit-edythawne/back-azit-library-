@@ -11,5 +11,6 @@ class SGUConstant {
 
     public const ARG_CURP = 'curp';
     public const ARG_MAIL = 'usuario';
+    public const ARG_CCT = 'cct';
 
 }
