@@ -14,6 +14,8 @@ class BaseBuilder {
     public const RELATION_HOST = 'host';
     public const QUERY_INLINE = 1;
     public const QUERY_NESTED = 2;
+    public const ACTION_ACCEPT = 1;
+    public const ACTION_REJECT = 2;
 
     // Builder
     protected Builder $builder;

@@ -7,6 +7,7 @@ use Azit\Ddd\Arch\Constant\MessageConstant;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\Validator as Validate;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,13 @@ class BaseRequest {
     }
 
     /**
+     * @param Request $request
+     */
+    public function setRequest(Request $request): void {
+        $this -> request = $request;
+    }
+
+    /**
      * @param string $key
      * @return mixed
      */
@@ -31,10 +39,11 @@ class BaseRequest {
     }
 
     /**
-     * @param Request $request
+     * Obtiene ultimo segmento de url
+     * @return string
      */
-    public function setRequest(Request $request): void {
-        $this -> request = $request;
+    protected function getUrlLastSegment(): string {
+        return Str::of($this -> request -> url()) -> basename();
     }
 
     /**
