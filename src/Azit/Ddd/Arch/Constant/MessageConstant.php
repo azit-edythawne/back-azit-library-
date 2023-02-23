@@ -9,6 +9,8 @@ class MessageConstant {
     public const SGU_EMPTY = 'SGU Vacio';
     public const SGU_VALID = 'SGU Valido';
     public const REQUIRE_TOKEN = 'Require token';
+    
+    public const SESSION_INVALID = 'Sesión invalida';
 
     // Route error
     public const EXCEPTION_ROUTE_NOT_FOUND = 'Ruta no encontrada';
