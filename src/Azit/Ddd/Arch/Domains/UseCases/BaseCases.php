@@ -74,7 +74,29 @@ abstract class BaseCases {
     protected function setResponse(string $message, mixed $data) : BaseResponse {
         $this -> resource -> setData($data);
         $this -> resource -> setMessage($message);
-        return $this->resource;
+        return $this -> resource;
+    }
+
+    /**
+     * Obtiene un valor del array de atributo dado un key
+     * @param string $key
+     * @return mixed
+     */
+    protected function getValue(string $key) : mixed {
+        if (Arr::has($this -> attributes, $key)) {
+            return Arr::get($this -> attributes, $key);
+        }
+
+        return null;
+    }
+
+    /**
+     * Validar que la request tenga una key
+     * @param string $key
+     * @return bool
+     */
+    protected function hasKey(string $key) : bool {
+        return Arr::has($this -> attributes, $key);
     }
 
     /**
