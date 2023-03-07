@@ -66,6 +66,16 @@ abstract class BaseCases {
     }
 
     /**
+     * Agregar nuevo valor al attributo del request
+     * @param string $key
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function newAttribute(string $key, mixed $value) : void {
+        Arr::add($this -> attributes, $key, $value);
+    }
+
+    /**
      * Retorna la respuesta
      * @param string $message
      * @param mixed $data
@@ -84,7 +94,9 @@ abstract class BaseCases {
      */
     protected function getValue(string $key) : mixed {
         if (Arr::has($this -> attributes, $key)) {
-            return Arr::get($this -> attributes, $key);
+            $value = Arr::get($this -> attributes, $key);
+
+            return $value == 'null' ? null : $value;
         }
 
         return null;
