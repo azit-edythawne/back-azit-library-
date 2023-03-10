@@ -20,7 +20,6 @@ class MailRepository extends Mailable {
      * @return void
      */
     public function __construct(string $view, string $subject, array $data = []) {
-        $data['mailable'] = $this;
         $this -> configView = $view;
         $this -> configSubject = $subject;
         $this -> configData = $data;
