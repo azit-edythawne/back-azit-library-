@@ -89,6 +89,10 @@ class StringUtil {
         return $this;
     }
 
+    public function isEmail() : bool {
+        return filter_var($this -> text, FILTER_VALIDATE_EMAIL);
+    }
+
     /**
      * Obtiene el string limpio
      * @return string
