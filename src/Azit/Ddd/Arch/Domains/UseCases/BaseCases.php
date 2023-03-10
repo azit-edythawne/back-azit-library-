@@ -139,21 +139,23 @@ abstract class BaseCases {
     }
 
     /**
-     * Obtiene un array
+     * Permite obtener un UploadedFile de los atributos
      * @param string $key
      * @param int $position
-     * @return UploadedFile
+     * @return UploadedFile|null
      */
-    protected function getAttachment(string $key, int $position = 0) : UploadedFile {
+    protected function getAttachment(string $key, int $position = 0) : ?UploadedFile {
+        if (!$this -> hasKey($key)) {
+            return null;
+        }
+
         $value = Arr::get($this->attributes, $key);
 
         if (is_array($value)) {
-            return $value[$position];
+            $value = $value[$position];
         }
 
-        if ($value instanceof UploadedFile) {
-            return $value;
-        }
+        return $value instanceof UploadedFile ? $value : null;
     }
 
     protected function getUrlLastSegment(): string {
