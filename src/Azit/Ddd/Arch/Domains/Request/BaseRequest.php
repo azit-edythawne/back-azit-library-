@@ -82,7 +82,7 @@ class BaseRequest {
         if ($validator->fails()) {
             throw new HttpResponseException(response()->json([
                 'message' => MessageConstant::EXCEPTION_DATA_REQUIRED,
-                'data' => $validator->failed()
+                'data' => $validator->errors()
             ], Response::HTTP_BAD_REQUEST));
         }
     }
