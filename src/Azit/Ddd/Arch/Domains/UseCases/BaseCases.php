@@ -72,7 +72,7 @@ abstract class BaseCases {
      * @return mixed
      */
     protected function newAttribute(string $key, mixed $value) : void {
-        Arr::add($this -> attributes, $key, $value);
+        $this->attributes = Arr::add($this -> attributes, $key, $value);
     }
 
     /**
