@@ -91,7 +91,7 @@ class BaseBuilderCompact {
      * @param array|null $filters
      * @return $this
      */
-    public function addMultiQuery(?array $filters = null) : BaseBuilderCompact {
+    public function addMultiQueries(?array $filters = null) : BaseBuilderCompact {
         if (!isset($filters)) {
             return $this;
         }
@@ -123,7 +123,7 @@ class BaseBuilderCompact {
      * @param array $filters
      * @return $this
      */
-    public function addQuery(array $filters) : BaseBuilderCompact {
+    public function addQueries(array $filters) : BaseBuilderCompact {
         $this -> builder -> where($filters);
         return $this;
     }
