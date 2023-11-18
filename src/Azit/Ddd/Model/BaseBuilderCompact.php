@@ -235,7 +235,7 @@ class BaseBuilderCompact {
             }
 
             if ($operator != self::IN && $operator != self::IN_NOT) {
-                $builder -> where($column);
+                $builder -> where($column[0], $column[1], $column[2], $column[3]);
             }
         }
     }
