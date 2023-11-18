@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 
+/**
+ * @deprecated Se recomienda usar BaseBuilderCompact
+ */
 class BaseBuilder {
 
     // Queries

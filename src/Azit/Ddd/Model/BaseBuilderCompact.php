@@ -14,6 +14,9 @@ class BaseBuilderCompact {
     public const ORDER_ASC = 'asc';
     public const ORDER_DESC = 'desc';
 
+    public const IN = 'In';
+    public const IN_NOT = 'NotIn';
+
     protected Builder $builder;
 
     /**
@@ -201,10 +204,12 @@ class BaseBuilderCompact {
 
         if ($isRelation) {
             $query -> has($table, '>=', 1, $boolean, function (Builder $query) use ($columns) {
-                $query -> where($columns);
+                $this -> whereType($query, $columns);
+                //$query -> where($columns);
             });
         } else {
-            $query -> where($columns);
+            $this -> whereType($query, $columns);
+            //$query -> where($columns);
         }
 
         if ($isBuilderReload) {
@@ -212,5 +217,27 @@ class BaseBuilderCompact {
         }
     }
 
+    /**
+     * Miultiples where
+     * @param Builder $builder
+     * @param array $columns
+     */
+    private function whereType(Builder $builder, array $columns) : void {
+        foreach ($columns as $column) {
+            $operator = $column[1];
+
+            if ($operator == self::IN){
+                $builder -> whereIn($column[0], $column[2], $column[3]);
+            }
+
+            if ($operator == self::IN_NOT) {
+                $builder -> whereIn($column[0], $column[2], $column[3], true);
+            }
+
+            if ($operator != self::IN && $operator == self::IN_NOT) {
+                $builder -> where($column);
+            }
+        }
+    }
 
 }
