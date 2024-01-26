@@ -5,6 +5,7 @@ namespace Azit\Ddd\Model;
 use Azit\Ddd\Arch\Constant\PageConstant;
 use Azit\Ddd\Arch\Constant\ValueConstant;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder as ContractBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
@@ -16,6 +17,12 @@ class BaseBuilderCompact {
 
     public const IN = 'In';
     public const IN_NOT = 'NotIn';
+
+    public const WHERE = 1;
+    public const WITH = 2;
+    public const WHERE_FN = 2;
+
+
 
     protected Builder $builder;
 
@@ -102,6 +109,8 @@ class BaseBuilderCompact {
         $builder = $this -> builder;
         $inline = Arr::get($filters, BaseBuilder::QUERY_INLINE, []);
         $nested = Arr::get($filters, BaseBuilder::QUERY_NESTED, []);
+        $nestedInline = collect();
+        $nestedRelation = collect();
 
         if (count($inline) > ValueConstant::ARRAY_SIZE_EMPTY) {
             collect($inline) -> each(function ($rowQueries) use ($builder) {
@@ -111,11 +120,38 @@ class BaseBuilderCompact {
 
 
         if (count($nested) > ValueConstant::ARRAY_SIZE_EMPTY) {
+            collect($nested) -> each(function ($rowQueries) use ($nestedInline, $nestedRelation) {
+                $isRelation = Arr::get($rowQueries, 'relation');
+
+                if ($isRelation) {
+                    $nestedRelation -> push($rowQueries);
+                }
+
+                if (!$isRelation) {
+                    $nestedInline -> push($rowQueries);
+                }
+            });
+
+            if ($nestedInline -> count() > ValueConstant::ARRAY_SIZE_EMPTY) {
+                $this -> builder -> where(function (Builder $query) use ($nestedInline) {
+                    collect($nestedInline) -> each(function ($rowQueries) use ($query) {
+                        $this -> applyFilter($query, $rowQueries);
+                    });
+                });
+            }
+
+            if ($nestedRelation -> count() > ValueConstant::ARRAY_SIZE_EMPTY) {
+                collect($nestedRelation) -> each(function ($rowQueries) use ($builder) {
+                    $this -> applyFilter($builder, $rowQueries, true, true);
+                });
+            }
+
+            /**
             $this -> builder -> where(function (Builder $query) use ($nested) {
                 collect($nested) -> each(function ($rowQueries) use ($query) {
                     $this -> applyFilter($query, $rowQueries);
                 });
-            });
+            });**/
         }
 
         return $this;
@@ -194,22 +230,34 @@ class BaseBuilderCompact {
      * @param Builder $query
      * @param array $rowQueries
      * @param bool $isBuilderReload
+     * @param bool $isEager
      * @return void
      */
-    private function applyFilter(Builder $query, array $rowQueries, bool $isBuilderReload = false) {
+    private function applyFilter(Builder $query, array $rowQueries, bool $isBuilderReload = false, bool $isEager = false) {
         $isRelation = Arr::get($rowQueries, 'relation');
         $table = Arr::get($rowQueries, 'table');
         $columns = Arr::get($rowQueries, 'columns');
         $boolean = Arr::get($rowQueries, 'boolean', 'and');
+        $selects = Arr::get($rowQueries, 'selects');
 
         if ($isRelation) {
-            $query -> has($table, '>=', 1, $boolean, function (Builder $query) use ($columns) {
-                $this -> whereType($query, $columns);
-                //$query -> where($columns);
-            });
-        } else {
-            $this -> whereType($query, $columns);
-            //$query -> where($columns);
+
+            if (!$isEager){
+                $query -> has($table, '>=', 1, $boolean, function (Builder $builder) use ($columns, $selects) {
+                    $this -> whereType($builder, $columns, $selects);
+                });
+            }
+
+            if ($isEager) {
+                $query -> withWhereHas($table, function (ContractBuilder $builder) use ($columns, $selects) {
+                    $this -> whereType($builder, $columns, $selects);
+                });
+            }
+
+        }
+
+        if (!$isRelation) {
+            $this -> whereType($query, $columns, $selects);
         }
 
         if ($isBuilderReload) {
@@ -218,11 +266,13 @@ class BaseBuilderCompact {
     }
 
     /**
-     * Miultiples where
-     * @param Builder $builder
+     * Multiples where
+     * @param ContractBuilder|Builder $builder
      * @param array $columns
+     * @param array|null $selects
+     * @return void
      */
-    private function whereType(Builder $builder, array $columns) : void {
+    private function whereType(ContractBuilder|Builder $builder, array $columns, array $selects = null) : void {
         foreach ($columns as $column) {
             $operator = $column[1];
 
@@ -237,6 +287,10 @@ class BaseBuilderCompact {
             if ($operator != self::IN && $operator != self::IN_NOT) {
                 $builder -> where($column[0], $column[1], $column[2], $column[3]);
             }
+        }
+
+        if (isset($selects)){
+            $builder -> select($selects);
         }
     }
 
