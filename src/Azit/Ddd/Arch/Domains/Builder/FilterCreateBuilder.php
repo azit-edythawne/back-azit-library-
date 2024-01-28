@@ -3,7 +3,7 @@
 namespace Azit\Ddd\Arch\Domains\Builder;
 
 use Azit\Ddd\Arch\Constant\ValueConstant;
-use Azit\Ddd\Model\BaseBuilder;
+use Azit\Ddd\Model\BaseBuilderCompact;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -28,8 +28,8 @@ class FilterCreateBuilder {
         $this -> columns = collect();
         $this -> selects = collect();
         $this -> queries = collect([
-            BaseBuilder::QUERY_INLINE => [],
-            BaseBuilder::QUERY_NESTED => [],
+            BaseBuilderCompact::QUERY_INLINE => [],
+            BaseBuilderCompact::QUERY_NESTED => [],
         ]);
     }
 
@@ -113,6 +113,16 @@ class FilterCreateBuilder {
         if (!Str::contains($operator, 'like')){
             $this -> columns -> add([$column, $operator, $value, $logic]);
         }
+    }
+
+    /**
+     * Permite constuir un builder para consultas de tipo RAW
+     * @param string $columnRaw
+     * @param array $bindings
+     * @param string $logic
+     */
+    public function addColumnRaw(string $columnRaw, array $bindings, string $logic = self::OPERATOR_AND){
+        $this -> columns -> add([$columnRaw, BaseBuilderCompact::OP_RAW, $bindings, $logic]);
     }
 
     /**

@@ -15,13 +15,19 @@ class BaseBuilderCompact {
     public const ORDER_ASC = 'asc';
     public const ORDER_DESC = 'desc';
 
-    public const IN = 'In';
-    public const IN_NOT = 'NotIn';
+    public const QUERY_INLINE = 1;
+    public const QUERY_NESTED = 2;
+
+    public const OP_IN = 'In';
+    public const OP_IN_NOT = 'NotIn';
 
     public const WHERE = 1;
     public const WITH = 2;
     public const WHERE_FN = 2;
 
+    public const OP_ILIKE = 'ilike';
+    public const OP_EQUAL = '=';
+    public const OP_RAW = 'where_raw';
 
 
     protected Builder $builder;
@@ -107,8 +113,8 @@ class BaseBuilderCompact {
         }
 
         $builder = $this -> builder;
-        $inline = Arr::get($filters, BaseBuilder::QUERY_INLINE, []);
-        $nested = Arr::get($filters, BaseBuilder::QUERY_NESTED, []);
+        $inline = Arr::get($filters, self::QUERY_INLINE, []);
+        $nested = Arr::get($filters, self::QUERY_NESTED, []);
         $nestedInline = collect();
         $nestedRelation = collect();
 
@@ -117,7 +123,6 @@ class BaseBuilderCompact {
                 $this -> applyFilter($builder, $rowQueries, true);
             });
         }
-
 
         if (count($nested) > ValueConstant::ARRAY_SIZE_EMPTY) {
             collect($nested) -> each(function ($rowQueries) use ($nestedInline, $nestedRelation) {
@@ -145,13 +150,6 @@ class BaseBuilderCompact {
                     $this -> applyFilter($builder, $rowQueries, true, true);
                 });
             }
-
-            /**
-            $this -> builder -> where(function (Builder $query) use ($nested) {
-                collect($nested) -> each(function ($rowQueries) use ($query) {
-                    $this -> applyFilter($query, $rowQueries);
-                });
-            });**/
         }
 
         return $this;
@@ -163,14 +161,14 @@ class BaseBuilderCompact {
      * @return $this
      */
     public function addQueries(array $filters) : BaseBuilderCompact {
-        $this -> builder -> where($filters);
+        $this -> whereType($this -> builder, $filters);
         return $this;
     }
 
     /**
      * Cargar nuevas relaciones al builder
      * @param array $relations
-     * @return Model
+     * @return BaseBuilderCompact
      */
     public function reloadRelations(array $relations) : BaseBuilderCompact {
         $model = $this -> builder -> getModel() -> load($relations);
@@ -276,15 +274,19 @@ class BaseBuilderCompact {
         foreach ($columns as $column) {
             $operator = $column[1];
 
-            if ($operator == self::IN){
+            if ($operator == self::OP_IN){
                 $builder -> whereIn($column[0], $column[2], $column[3]);
             }
 
-            if ($operator == self::IN_NOT) {
+            if ($operator == self::OP_IN_NOT) {
                 $builder -> whereIn($column[0], $column[2], $column[3], true);
             }
 
-            if ($operator != self::IN && $operator != self::IN_NOT) {
+            if ($operator == self::OP_RAW) {
+                $builder -> whereRaw($column[0], $column[2], $column[3]);
+            }
+
+            if ($operator != self::OP_IN && $operator != self::OP_IN_NOT && $operator == self::OP_RAW) {
                 $builder -> where($column[0], $column[1], $column[2], $column[3]);
             }
         }
