@@ -15,8 +15,8 @@ class BaseBuilderCompact {
     public const ORDER_ASC = 'asc';
     public const ORDER_DESC = 'desc';
 
-    public const QUERY_INLINE = 1;
-    public const QUERY_NESTED = 2;
+    private const QUERY_INLINE = 1;
+    private const QUERY_NESTED = 2;
 
     public const OP_IN = 'In';
     public const OP_IN_NOT = 'NotIn';
@@ -27,6 +27,8 @@ class BaseBuilderCompact {
 
     public const OP_ILIKE = 'ilike';
     public const OP_EQUAL = '=';
+    public const AND = 'and';
+    public const OR = 'or';
     public const OP_RAW = 'where_raw';
 
 
@@ -286,7 +288,7 @@ class BaseBuilderCompact {
                 $builder -> whereRaw($column[0], $column[2], $column[3]);
             }
 
-            if ($operator != self::OP_IN && $operator != self::OP_IN_NOT && $operator == self::OP_RAW) {
+            if ($operator != self::OP_IN && $operator != self::OP_IN_NOT && $operator != self::OP_RAW) {
                 $builder -> where($column[0], $column[1], $column[2], $column[3]);
             }
         }
