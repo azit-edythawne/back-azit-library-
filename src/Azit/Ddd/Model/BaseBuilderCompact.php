@@ -18,12 +18,12 @@ class BaseBuilderCompact {
     private const QUERY_INLINE = 1;
     private const QUERY_NESTED = 2;
 
+    public const TYPE_WHERE = 1;
+    public const TYPE_WHERE_FN = 2;
+    public const TYPE_RELATION_NESTED = 3;
+
     public const OP_IN = 'In';
     public const OP_IN_NOT = 'NotIn';
-
-    public const WHERE = 1;
-    public const WITH = 2;
-    public const WHERE_FN = 2;
 
     public const OP_ILIKE = 'ilike';
     public const OP_EQUAL = '=';
@@ -104,60 +104,7 @@ class BaseBuilderCompact {
         return $this;
     }
 
-    /**
-     * Permite trabajar con consultas anidadas
-     * @param array|null $filters
-     * @return $this
-     */
-    public function addMultiQueries(?array $filters = null) : BaseBuilderCompact {
-        if (!isset($filters)) {
-            return $this;
-        }
-
-        $builder = $this -> builder;
-        $inline = Arr::get($filters, self::QUERY_INLINE, []);
-        $nested = Arr::get($filters, self::QUERY_NESTED, []);
-        $nestedInline = collect();
-        $nestedRelation = collect();
-
-        if (count($inline) > ValueConstant::ARRAY_SIZE_EMPTY) {
-            collect($inline) -> each(function ($rowQueries) use ($builder) {
-                $this -> applyFilter($builder, $rowQueries, true);
-            });
-        }
-
-        if (count($nested) > ValueConstant::ARRAY_SIZE_EMPTY) {
-            collect($nested) -> each(function ($rowQueries) use ($nestedInline, $nestedRelation) {
-                $isRelation = Arr::get($rowQueries, 'relation');
-
-                if ($isRelation) {
-                    $nestedRelation -> push($rowQueries);
-                }
-
-                if (!$isRelation) {
-                    $nestedInline -> push($rowQueries);
-                }
-            });
-
-            if ($nestedInline -> count() > ValueConstant::ARRAY_SIZE_EMPTY) {
-                $this -> builder -> where(function (Builder $query) use ($nestedInline) {
-                    collect($nestedInline) -> each(function ($rowQueries) use ($query) {
-                        $this -> applyFilter($query, $rowQueries);
-                    });
-                });
-            }
-
-            if ($nestedRelation -> count() > ValueConstant::ARRAY_SIZE_EMPTY) {
-                collect($nestedRelation) -> each(function ($rowQueries) use ($builder) {
-                    $this -> applyFilter($builder, $rowQueries, true, true);
-                });
-            }
-        }
-
-        return $this;
-    }
-
-    /**
+     /**
      * Permite aplicar filtros where
      * @param array $filters
      * @return $this
@@ -211,7 +158,7 @@ class BaseBuilderCompact {
         return $this -> builder -> paginate($perPage) -> withQueryString();
     }
 
-    /**
+     /**
      * Obtiene el array
      * @param bool $requireFirst
      * @return array
@@ -226,6 +173,51 @@ class BaseBuilderCompact {
     }
 
     /**
+     * Permite trabajar con consultas anidadas
+     * @param array|null $filters
+     * @return $this
+     */
+    public function addMultiQueries(?array $filters = null) : BaseBuilderCompact {
+        if (!isset($filters)) {
+            return $this;
+        }
+
+        $queryWhere = Arr::get($filters, self::TYPE_WHERE, []);
+        $queryWhereFn = Arr::get($filters, self::TYPE_WHERE_FN, []);
+        $queryRelation = Arr::get($filters, self::TYPE_RELATION_NESTED, []);
+
+        // Se realizan multiples consultas where
+        if (count($queryWhere) > ValueConstant::ARRAY_SIZE_EMPTY) {
+            $builder = $this -> builder;
+
+            collect($queryWhere) -> each(function ($rowQueries) use ($builder) {
+                $this -> applyFilter($builder, $rowQueries, true);
+            });
+        }
+
+        // Se realizan multiples consultas anidada con la where function
+        if (count($queryWhereFn) > ValueConstant::ARRAY_SIZE_EMPTY) {
+            $this -> builder -> where(function (Builder $query) use ($queryWhereFn) {
+                collect($queryWhereFn) -> each(function ($rowQueries) use ($query) {
+                    $this -> applyFilter($query, $rowQueries);
+                });
+            });
+        }
+
+        // Se realizan multiples consultas anidas con tablas relacionales
+        if (count($queryRelation) > ValueConstant::ARRAY_SIZE_EMPTY) {
+            $builder = $this -> builder;
+
+            collect($queryRelation) -> each(function ($rowQueries) use ($builder) {
+                $this -> applyFilter($builder, $rowQueries, true, true);
+            });
+        }
+
+        return $this;
+    }
+
+
+    /**
      * Permite aplicar condicionales anidadas
      * @param Builder $query
      * @param array $rowQueries
@@ -233,25 +225,24 @@ class BaseBuilderCompact {
      * @param bool $isEager
      * @return void
      */
-    private function applyFilter(Builder $query, array $rowQueries, bool $isBuilderReload = false, bool $isEager = false) {
+    private function applyFilter(Builder $query, array $rowQueries, bool $isBuilderReload = false, bool $isEager = false) : void {
         $isRelation = Arr::get($rowQueries, 'relation');
         $table = Arr::get($rowQueries, 'table');
         $columns = Arr::get($rowQueries, 'columns');
         $boolean = Arr::get($rowQueries, 'boolean', 'and');
         $selects = Arr::get($rowQueries, 'selects');
 
+        $callback = function (Builder|ContractBuilder $builder) use ($columns, $selects) {
+            $this -> whereType($builder, $columns, $selects);
+        };
+
         if ($isRelation) {
 
             if (!$isEager){
-                $query -> has($table, '>=', 1, $boolean, function (Builder $builder) use ($columns, $selects) {
-                    $this -> whereType($builder, $columns, $selects);
-                });
+                $query -> has($table, '>=', 1, $boolean, $callback);
             }
 
             if ($isEager) {
-                $callback = function (ContractBuilder $builder) use ($columns, $selects) {
-                    $this -> whereType($builder, $columns, $selects);
-                };
 
                 if ($boolean == self::AND) {
                     $query -> withWhereHas($table, $callback);
@@ -261,7 +252,6 @@ class BaseBuilderCompact {
                     $query -> orWhereHas($table, $callback) -> with($callback ? [$table => fn ($query) => $callback($query)] : $table);
                 }
             }
-
         }
 
         if (!$isRelation) {
