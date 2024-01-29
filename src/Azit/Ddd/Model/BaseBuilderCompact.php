@@ -249,9 +249,18 @@ class BaseBuilderCompact {
             }
 
             if ($isEager) {
-                $query -> withWhereHas($table, function (ContractBuilder $builder) use ($columns, $selects) {
-                    $this -> whereType($builder, $columns, $selects);
-                });
+
+                if ($boolean == self::AND) {
+                    $query -> withWhereHas($table, function (ContractBuilder $builder) use ($columns, $selects) {
+                        $this -> whereType($builder, $columns, $selects);
+                    });
+                }
+
+                if ($boolean == self::OR) {
+                    $query -> orWhereHas($table, function (Builder $builder) use ($columns, $selects) {
+                        $this -> whereType($builder, $columns, $selects);
+                    }) -> with($callback ? [$table => fn ($query) => $callback($query)] : $table);
+                }
             }
 
         }
